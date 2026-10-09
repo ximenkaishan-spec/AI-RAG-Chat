@@ -295,14 +295,12 @@ data/
 ## 10. 项目目录
 ai-demo/
 ├── api.py
-├── app.py
 ├── Dockerfile
 ├── requirements.txt
-├── .env
-├── .env.example
+├── .env.example      # 环境变量模板
 ├── .gitignore
 ├── README.md
-├── data/
+├── data/             # 运行时生成，不提交到 Git
 │   ├── chat.db
 │   └── documents/
 └── static/
@@ -312,10 +310,10 @@ ai-demo/
     ├── highlight.min.js
     └── highlight.css
 ## 11. 安全注意事项
+真实 API Key 和 .env 文件都不应该提交到 Git。
+项目提供 .env.example 作为配置模板。
 API Key
-
 不要把真实 API Key 写入：
-
 Git
 GitHub
 Gitee
