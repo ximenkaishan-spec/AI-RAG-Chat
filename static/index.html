@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI 私有化知识助手</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<style>
+:root{--bg:#f5f7fa;--panel:#fff;--line:#e5e7eb;--text:#172033;--muted:#6b7280;--primary:#2563eb;--primary2:#1d4ed8;--danger:#dc2626;--ok:#16a34a;--shadow:0 8px 28px rgba(15,23,42,.07)}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);height:100vh;overflow:hidden}
+button,input,textarea{font:inherit}.app{display:flex;height:100vh}.sidebar{width:230px;background:#111827;color:#e5e7eb;display:flex;flex-direction:column;padding:18px 12px}.brand{font-weight:700;font-size:18px;padding:6px 10px 22px}.brand small{display:block;color:#9ca3af;font-size:11px;font-weight:400;margin-top:5px}
+.nav button{width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:11px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px}.nav button:hover,.nav button.active{background:#1f2937;color:#fff}.nav-icon{display:inline-block;width:24px}
+.sidebar-foot{margin-top:auto;padding:10px;color:#94a3b8;font-size:11px;line-height:1.7}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}.topbar{height:60px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px}.page-title{font-size:16px;font-weight:650}.status-pill{font-size:12px;padding:5px 10px;border-radius:999px;background:#f3f4f6;color:var(--muted)}.status-pill.ok{background:#ecfdf3;color:#15803d}.status-pill.bad{background:#fef2f2;color:#b91c1c}
+.page{display:none;flex:1;min-height:0}.page.active{display:flex}.content{padding:22px;overflow:auto;width:100%}
+.chat-page{flex-direction:column}.chat-layout{display:flex;flex:1;min-height:0}.sessions{width:250px;border-right:1px solid var(--line);background:#fafafa;padding:14px;display:flex;flex-direction:column}.new-chat{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px;cursor:pointer}.new-chat:hover{border-color:#cbd5e1}.session-list{margin-top:12px;overflow:auto}.session-row{display:flex;align-items:center;gap:4px;margin-bottom:4px}.session{flex:1;min-width:0;padding:10px;border-radius:8px;cursor:pointer}.session:hover,.session.active{background:#e8eefc}.session-main{min-width:0}.session-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.session-time{font-size:10px;color:var(--muted);margin-top:4px}.session-delete{flex:0 0 auto;width:28px;height:28px;border:0;background:transparent;color:#999;border-radius:6px;cursor:pointer;font-size:16px;line-height:28px}.session-delete:hover{background:#fee2e2;color:#dc2626}.session-more{width:100%;margin-top:6px;padding:8px;border:1px solid var(--line);background:#fff;border-radius:8px;color:#555;cursor:pointer}.session-more:hover{background:#f0f4fa}.chat-main{flex:1;min-width:0;display:flex;flex-direction:column}.chat{flex:1;overflow:auto;padding:24px max(24px,7vw)}.empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted)}.empty h2{color:var(--text);margin-bottom:8px}.message{display:flex;margin:0 auto 18px;max-width:900px}.message.user{justify-content:flex-end}.bubble{max-width:80%;padding:11px 14px;border-radius:10px;line-height:1.65;font-size:14px;word-break:break-word}.message.user .bubble{background:var(--primary);color:white}.message.assistant .bubble{background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03)}.bubble p:first-child{margin-top:0}.bubble p:last-child{margin-bottom:0}.bubble pre{background:#f3f4f6;padding:12px;border-radius:7px;overflow:auto}.bubble code{font-size:12px}.composer{border-top:1px solid var(--line);background:#fff;padding:14px max(24px,7vw)}.composer-box{max-width:900px;margin:auto;display:flex;gap:8px}.prompt{flex:1;resize:none;border:1px solid var(--line);border-radius:9px;padding:11px 12px;min-height:44px;max-height:130px;outline:none}.prompt:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.08)}.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 13px;cursor:pointer}.btn:hover{background:#f8fafc}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary2)}.btn.danger{color:var(--danger);border-color:#fecaca}.btn:disabled{opacity:.5;cursor:not-allowed}.hint{max-width:900px;margin:7px auto 0;color:#9ca3af;font-size:11px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.card h3{margin:0 0 5px;font-size:15px}.sub{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.metric{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px}.metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:25px;font-weight:700;margin-top:5px}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line)}.table th{font-size:11px;color:var(--muted);font-weight:600}.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px}.badge.ok{background:#ecfdf3;color:#15803d}.badge.bad{background:#fef2f2;color:#b91c1c}.badge.blue{background:#eff6ff;color:#1d4ed8}.upload-row,.debug-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.file{border:1px dashed #cbd5e1;padding:10px;border-radius:8px;background:#fafafa}.field{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;outline:none}.debug-result{margin-top:15px}.result-item{border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:8px;background:#fafafa}.score{font-weight:700;color:var(--primary)}.json{white-space:pre-wrap;background:#111827;color:#d1d5db;padding:12px;border-radius:8px;font-size:12px;overflow:auto}
+.loading{color:var(--muted);font-size:13px}.error{color:var(--danger);font-size:13px}.success{color:var(--ok);font-size:13px}.warn{color:#b45309;font-size:13px}
+
+/* ============================================================
+   上传进度条
+   ============================================================ */
+.upload-progress{
+  display:none;
+  margin-top:14px;
+}
+.upload-progress.show{display:block;}
+.upload-progress-track{
+  width:100%;
+  height:8px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+}
+.upload-progress-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#2563eb,#60a5fa);
+  border-radius:999px;
+  transition:width .35s ease;
+}
+.upload-progress-bar.done{background:linear-gradient(90deg,#16a34a,#4ade80);}
+.upload-progress-bar.error{background:linear-gradient(90deg,#dc2626,#f87171);}
+.upload-progress-text{
+  margin-top:7px;
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+.upload-progress-text .pct{font-variant-numeric:tabular-nums;color:var(--primary);font-weight:600;}
+
+/* ============================================================
+   知识库搜索框
+   ============================================================ */
+.kb-toolbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.kb-search-wrap{
+  position:relative;
+  flex:1;
+  min-width:220px;
+}
+.kb-search{
+  width:100%;
+  padding:9px 34px 9px 12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  outline:none;
+}
+.kb-search:focus{
+  border-color:#93c5fd;
+  box-shadow:0 0 0 3px rgba(37,99,235,.08);
+}
+.kb-search-clear{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  width:24px;
+  height:24px;
+  border:0;
+  background:transparent;
+  color:#9ca3af;
+  cursor:pointer;
+  border-radius:6px;
+  font-size:14px;
+  line-height:24px;
+  display:none;
+}
+.kb-search-clear:hover{background:#f3f4f6;color:#555;}
+.kb-search-clear.show{display:block;}
+.kb-count{
+  font-size:12px;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.kb-empty{
+  padding:18px 6px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* ============================================================
+   文档查看弹窗 + Markdown 渲染
+   ============================================================ */
+.document-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:24px;
+}
+.document-modal.show{display:flex;}
+.document-modal-box{
+  width:min(1000px,96vw);
+  height:min(760px,90vh);
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.document-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:15px 18px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+.document-modal-title{min-width:0;flex:1;}
+.document-modal-title-main{
+  font-size:15px;
+  font-weight:650;
+  word-break:break-all;
+}
+.document-modal-title-sub{
+  margin-top:4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.document-modal-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex:0 0 auto;
+}
+.mode-toggle{
+  display:inline-flex;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#f8fafc;
+}
+.mode-toggle button{
+  border:0;
+  background:transparent;
+  padding:7px 12px;
+  cursor:pointer;
+  font-size:12px;
+  color:#555;
+}
+.mode-toggle button.active{
+  background:var(--primary);
+  color:#fff;
+}
+.document-modal-close{
+  flex:0 0 auto;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:7px;
+  background:#f3f4f6;
+  color:#555;
+  cursor:pointer;
+  font-size:20px;
+  line-height:34px;
+}
+.document-modal-close:hover{background:#e5e7eb;}
+.document-modal-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:18px;
+  background:#f8fafc;
+}
+.document-source-content{
+  margin:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  font-family:Consolas,"Courier New","Microsoft YaHei",monospace;
+  font-size:13px;
+  line-height:1.7;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:16px;
+  min-height:100%;
+}
+.markdown-rendered{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:20px 22px;
+  min-height:100%;
+  font-size:14px;
+  line-height:1.75;
+  word-break:break-word;
+}
+.markdown-rendered h1,
+.markdown-rendered h2,
+.markdown-rendered h3,
+.markdown-rendered h4{
+  margin:1.2em 0 .6em;
+  line-height:1.3;
+}
+.markdown-rendered h1{font-size:22px;border-bottom:1px solid var(--line);padding-bottom:8px;}
+.markdown-rendered h2{font-size:18px;border-bottom:1px solid var(--line);padding-bottom:6px;}
+.markdown-rendered h3{font-size:16px;}
+.markdown-rendered p{margin:.7em 0;}
+.markdown-rendered pre{
+  background:#f3f4f6;
+  padding:12px 14px;
+  border-radius:8px;
+  overflow:auto;
+}
+.markdown-rendered code{
+  background:#f3f4f6;
+  padding:1px 5px;
+  border-radius:4px;
+  font-size:12.5px;
+}
+.markdown-rendered pre code{
+  background:transparent;
+  padding:0;
+}
+.markdown-rendered blockquote{
+  margin:.8em 0;
+  padding:.4em 1em;
+  color:#4b5563;
+  border-left:4px solid #cbd5e1;
+  background:#f9fafb;
+  border-radius:0 6px 6px 0;
+}
+.markdown-rendered ul,
+.markdown-rendered ol{
+  padding-left:1.5em;
+  margin:.6em 0;
+}
+.markdown-rendered table{
+  border-collapse:collapse;
+  margin:.8em 0;
+  width:100%;
+}
+.markdown-rendered th,
+.markdown-rendered td{
+  border:1px solid var(--line);
+  padding:8px 10px;
+}
+.markdown-rendered th{
+  background:#f9fafb;
+  text-align:left;
+}
+.markdown-rendered img{
+  max-width:100%;
+  border-radius:6px;
+}
+.markdown-rendered a{color:var(--primary);}
+.document-modal-footer{
+  padding:11px 18px;
+  border-top:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  background:#fff;
+}
+.document-modal-footer .footer-tip{
+  font-size:11px;
+  color:var(--muted);
+}
+@media(max-width:800px){
+  .document-modal{padding:10px;}
+  .document-modal-box{width:100%;height:94vh;}
+  .document-source-content{font-size:12px;}
+  .markdown-rendered{font-size:13px;padding:14px;}
+  .document-modal-header{flex-wrap:wrap;}
+  .document-modal-actions{width:100%;justify-content:flex-end;}
+}
+@media(max-width:800px){.sidebar{width:64px;padding:12px 7px}.brand{font-size:0;text-align:center}.brand:first-letter{font-size:20px}.brand small,.nav button span,.sidebar-foot{display:none}.nav button{text-align:center}.sessions{display:none}.chat{padding:16px}.composer{padding:10px}.grid{grid-template-columns:1fr}.bubble{max-width:92%}.topbar{padding:0 14px}.content{padding:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">AI 私有化知识助手<small>FastAPI · RAG · Qwen · Docker</small></div>
+  <nav class="nav">
+    <button class="active" data-page="chat"><span class="nav-icon">💬</span><span>AI 对话</span></button>
+    <button data-page="knowledge"><span class="nav-icon">📚</span><span>知识库</span></button>
+    <button data-page="health"><span class="nav-icon">♥</span><span>系统健康</span></button>
+    <button data-page="rag"><span class="nav-icon">⌕</span><span>RAG 调试</span></button>
+  </nav>
+  <div class="sidebar-foot">AI 应用面试 Demo<br>本地 Embedding + RAG + Qwen</div>
+</aside>
+
+<main class="main">
+<header class="topbar"><div class="page-title" id="pageTitle">AI 对话</div><div id="globalStatus" class="status-pill">检查中...</div></header>
+
+<section class="page active chat-page" id="page-chat">
+  <div class="chat-layout">
+    <aside class="sessions">
+      <button class="new-chat" id="newChat">＋ 新建会话</button>
+      <div class="session-list" id="sessionList"></div>
+    </aside>
+    <div class="chat-main">
+      <div class="chat" id="chat"><div class="empty" id="empty"><div><h2>AI 私有化知识助手</h2><p>基于知识库进行 RAG 检索，再调用 Qwen 生成回答。</p></div></div></div>
+      <div class="composer">
+        <div class="composer-box">
+          <textarea class="prompt" id="prompt" placeholder="输入问题，例如：Docker 容器如何查看日志？"></textarea>
+          <button class="btn primary" id="sendBtn">发送</button>
+          <button class="btn danger" id="stopBtn" disabled>停止</button>
+        </div>
+        <div class="hint">Ctrl + Enter 发送 · 仅回答知识库中能够检索到的信息</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="page-knowledge">
+<div class="content">
+  <div class="card">
+    <h3>知识库管理</h3>
+    <div class="sub">上传 TXT / Markdown 文档，系统自动切分、Embedding 并写入 SQLite。同名文件上传时会提示是否覆盖。</div>
+    <div class="upload-row" style="margin-top:15px">
+      <input class="file" type="file" id="knowledgeFile" accept=".txt,.md,.markdown">
+      <button class="btn primary" id="uploadBtn">上传文档</button>
+      <span id="uploadStatus"></span>
+    </div>
+
+    <!-- 上传进度条 -->
+    <div class="upload-progress" id="uploadProgress">
+      <div class="upload-progress-track">
+        <div class="upload-progress-bar" id="uploadProgressBar"></div>
+      </div>
+      <div class="upload-progress-text">
+        <span id="uploadProgressLabel">准备中...</span>
+        <span class="pct" id="uploadProgressPct">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>已加载文档</h3>
+    <!-- 知识库搜索框 -->
+    <div class="kb-toolbar">
+      <div class="kb-search-wrap">
+        <input class="kb-search" id="kbSearch" type="text" placeholder="搜索文档名...">
+        <button class="kb-search-clear" id="kbSearchClear" type="button" title="清空">×</button>
+      </div>
+      <span class="kb-count" id="kbCount"></span>
+    </div>
+    <div id="documents"><div class="loading">加载中...</div></div>
+  </div>
+</div>
+</section>
+
+<section class="page" id="page-health">
+<div class="content">
+  <div class="card"><h3>系统健康检查</h3><div class="sub">检查 SQLite、Ollama、Embedding 和 Qwen 服务链路。</div><div style="margin-top:12px"><button class="btn" id="refreshHealth">重新检查</button></div></div>
+  <div class="grid" id="healthCards"></div>
+  <div class="card"><h3>原始检查结果</h3><div class="json" id="healthJson">加载中...</div></div>
+</div>
+</section>
+
+<section class="page" id="page-rag">
+<div class="content">
+  <div class="card"><h3>RAG 检索调试</h3><div class="sub">输入问题，观察 Embedding、Similarity、Threshold 和 Top-K 结果。</div>
+    <div class="debug-row" style="margin-top:15px"><input class="field" id="ragQuestion" value="Docker 容器如何查看日志？"><button class="btn primary" id="ragDebugBtn">执行检索</button></div>
+    <div id="ragSummary" style="margin-top:14px"></div><div class="debug-result" id="ragResults"></div>
+  </div>
+</div>
+</section>
+</main>
+</div>
+
+<!-- ============================================================
+     文档查看弹窗（支持 Markdown 渲染 / 源码切换）
+     ============================================================ -->
+
+<div class="document-modal" id="documentModal">
+  <div class="document-modal-box">
+
+    <div class="document-modal-header">
+      <div class="document-modal-title">
+        <div class="document-modal-title-main" id="documentModalTitle">文档内容</div>
+        <div class="document-modal-title-sub" id="documentModalSub">加载中...</div>
+      </div>
+
+      <div class="document-modal-actions">
+        <div class="mode-toggle" id="docModeToggle">
+          <button type="button" data-mode="rendered" class="active">渲染</button>
+          <button type="button" data-mode="source">源码</button>
+        </div>
+        <button class="document-modal-close" id="documentModalClose" title="关闭">×</button>
+      </div>
+    </div>
+
+    <div class="document-modal-body" id="documentModalBody">
+      <pre class="document-source-content" id="documentSourceContent">加载中...</pre>
+      <div class="markdown-rendered" id="documentRendered" style="display:none;"></div>
+    </div>
+
+    <div class="document-modal-footer">
+      <span class="footer-tip" id="documentModalTip">—</span>
+      <button class="btn" id="documentModalCloseBottom">关闭</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let currentController=null;
+let sessionId=localStorage.getItem("ai_demo_session_id")||newSessionId();
+
+function newSessionId(){return "session-"+Date.now()+"-"+Math.random().toString(36).slice(2,8)}
+localStorage.setItem("ai_demo_session_id",sessionId);
+
+const pageTitles={chat:"AI 对话",knowledge:"知识库",health:"系统健康",rag:"RAG 调试"};
+
+document.querySelectorAll(".nav button").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active"); $("page-"+btn.dataset.page).classList.add("active"); $("pageTitle").textContent=pageTitles[btn.dataset.page];
+  if(btn.dataset.page==="knowledge") loadDocuments();
+  if(btn.dataset.page==="health") loadHealth();
+}));
+
+function renderMarkdown(text){
+  const raw=marked.parse(text||"");
+  const safe=DOMPurify.sanitize(raw);
+  const box=document.createElement("div"); box.innerHTML=safe;
+  box.querySelectorAll("pre code").forEach(el=>hljs.highlightElement(el));
+  return box.innerHTML;
+}
+function addMessage(role,content){
+  $("empty")?.remove();
+  const row=document.createElement("div"); row.className="message "+role;
+  const bubble=document.createElement("div"); bubble.className="bubble";
+  if(role==="assistant") bubble.innerHTML=renderMarkdown(content); else bubble.textContent=content;
+  row.appendChild(bubble); $("chat").appendChild(row); $("chat").scrollTop=$("chat").scrollHeight; return bubble;
+}
+function clearChat(){ $("chat").innerHTML='<div class="empty" id="empty"><div><h2>AI 私有化知识助手</h2><p>基于知识库进行 RAG 检索，再调用 Qwen 生成回答。</p></div></div>'; }
+
+let showAllSessions = false;
+const SESSION_PREVIEW_COUNT = 8;
+
+async function loadSessions(){
+  try{
+    const r=await fetch("/sessions");
+    if(!r.ok) throw Error();
+
+    const data=await r.json();
+    const list=$("sessionList");
+    list.innerHTML="";
+
+    const sessions=data.sessions||[];
+
+    let visibleSessions;
+    if(showAllSessions || sessions.length<=SESSION_PREVIEW_COUNT){
+      visibleSessions=sessions;
+    }else{
+      visibleSessions=sessions.slice(0,SESSION_PREVIEW_COUNT);
+      const currentExists=visibleSessions.some(s=>s.session_id===sessionId);
+      if(!currentExists){
+        const currentSession=sessions.find(s=>s.session_id===sessionId);
+        if(currentSession) visibleSessions.push(currentSession);
+      }
+    }
+
+    visibleSessions.forEach(s=>{
+      const row=document.createElement("div");
+      row.className="session-row";
+
+      const d=document.createElement("div");
+      d.className="session"+(s.session_id===sessionId ? " active" : "");
+
+      const main=document.createElement("div");
+      main.className="session-main";
+
+      const title=document.createElement("div");
+      title.className="session-title";
+      title.textContent=s.title||"新会话";
+
+      const time=document.createElement("div");
+      time.className="session-time";
+      time.textContent=s.created_at||"";
+
+      main.appendChild(title);
+      main.appendChild(time);
+      d.appendChild(main);
+      d.onclick=()=>switchSession(s.session_id);
+
+      const del=document.createElement("button");
+      del.className="session-delete";
+      del.type="button";
+      del.textContent="×";
+      del.title="删除会话";
+      del.addEventListener("click",async e=>{
+        e.stopPropagation();
+        await deleteSession(s.session_id);
+      });
+
+      row.appendChild(d);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+
+    if(sessions.length>SESSION_PREVIEW_COUNT){
+      const more=document.createElement("button");
+      more.className="session-more";
+      more.type="button";
+      more.textContent = showAllSessions ? "收起" : "展开全部（"+sessions.length+"）";
+      more.onclick=async()=>{
+        showAllSessions=!showAllSessions;
+        await loadSessions();
+      };
+      list.appendChild(more);
+    }
+
+  }catch(e){
+    $("sessionList").innerHTML='<div class="error">会话加载失败</div>';
+  }
+}
+
+async function deleteSession(id){
+  if(!confirm("确定删除这个历史会话吗？删除后无法恢复。")) return;
+
+  try{
+    const r=await fetch("/sessions/"+encodeURIComponent(id),{method:"DELETE"});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.detail||"删除失败");
+
+    if(id===sessionId){
+      if(currentController){ currentController.abort(); currentController=null; }
+      sessionId=newSessionId();
+      localStorage.setItem("ai_demo_session_id",sessionId);
+      clearChat();
+    }
+    await loadSessions();
+  }catch(e){
+    alert(e.message||"删除会话失败，请检查 API 服务。");
+  }
+}
+
+async function loadHistory(){
+  try{
+    const r=await fetch("/history/"+encodeURIComponent(sessionId)); if(!r.ok) throw Error();
+    const data=await r.json(); clearChat(); data.messages.forEach(m=>addMessage(m.role,m.content));
+  }catch(e){clearChat(); addMessage("assistant","历史记录加载失败，请检查 API 服务。")}
+}
+async function switchSession(id){if(currentController) currentController.abort();sessionId=id;localStorage.setItem("ai_demo_session_id",id);await loadHistory();await loadSessions()}
+$("newChat").onclick=async()=>{if(currentController)currentController.abort();sessionId=newSessionId();localStorage.setItem("ai_demo_session_id",sessionId);clearChat();await loadSessions()};
+
+async function sendMessage(){
+  const input=$("prompt"), message=input.value.trim(); if(!message||currentController)return;
+  input.value=""; addMessage("user",message); const bubble=addMessage("assistant","");
+  currentController=new AbortController(); $("sendBtn").disabled=true; $("stopBtn").disabled=false;
+  try{
+    const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:sessionId,message}),signal:currentController.signal});
+    if(!r.ok) throw Error("HTTP "+r.status);
+    const reader=r.body.getReader(), decoder=new TextDecoder("utf-8"); let answer="";
+    while(true){const {value,done}=await reader.read();if(done)break;answer+=decoder.decode(value,{stream:true});bubble.innerHTML=renderMarkdown(answer);$("chat").scrollTop=$("chat").scrollHeight}
+  }catch(e){
+    if(e.name==="AbortError"){bubble.innerHTML=renderMarkdown("已停止生成。")}else{bubble.innerHTML='<span class="error">请求失败，请检查服务状态。</span>'}
+  }finally{currentController=null;$("sendBtn").disabled=false;$("stopBtn").disabled=true;loadSessions()}
+}
+async function stopGeneration(){
+  if(!currentController)return;
+  currentController.abort();
+  try{await fetch("/stop/"+encodeURIComponent(sessionId),{method:"POST"})}catch(e){}
+  $("sendBtn").disabled=false;$("stopBtn").disabled=true;
+}
+$("sendBtn").onclick=sendMessage;$("stopBtn").onclick=stopGeneration;
+$("prompt").addEventListener("keydown",e=>{if(e.ctrlKey&&e.key==="Enter"){e.preventDefault();sendMessage()}});
+
+// ============================================================
+// 知识库：文档列表 + 搜索过滤
+// ============================================================
+
+let allDocuments = [];        // 缓存服务端返回的全部文档
+let kbSearchKeyword = "";     // 当前搜索关键词
+
+async function loadDocuments(){
+  const box=$("documents");
+  box.innerHTML='<div class="loading">加载中...</div>';
+  try{
+    const r=await fetch("/documents");
+    if(!r.ok) throw Error();
+    const data=await r.json();
+    allDocuments = data.documents || [];
+    renderDocuments();
+  }catch(e){
+    box.innerHTML='<div class="error">知识库加载失败。</div>';
+    $("kbCount").textContent = "";
+  }
+}
+
+function renderDocuments(){
+  const box=$("documents");
+  const kw = kbSearchKeyword.trim().toLowerCase();
+
+  const filtered = kw
+    ? allDocuments.filter(d =>
+        (d.document_name||"").toLowerCase().includes(kw)
+      )
+    : allDocuments;
+
+  // 命中数
+  if(allDocuments.length === 0){
+    $("kbCount").textContent = "";
+  }else if(kw){
+    $("kbCount").textContent =
+      "匹配 " + filtered.length + " / " + allDocuments.length + " 个文档";
+  }else{
+    $("kbCount").textContent = "共 " + allDocuments.length + " 个文档";
+  }
+
+  if(allDocuments.length === 0){
+    box.innerHTML='<div class="sub">暂无知识库文档。</div>';
+    return;
+  }
+
+  if(filtered.length === 0){
+    box.innerHTML =
+      '<div class="kb-empty">没有匹配「' +
+      escapeHtml(kbSearchKeyword) +
+      '」的文档。</div>';
+    return;
+  }
+
+  let h='<table class="table"><thead><tr><th>文档</th><th>Chunks</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
+  filtered.forEach(d=>{
+    h+='<tr><td>'+highlightName(d.document_name)+'</td><td><span class="badge blue">'+d.chunk_count+'</span></td><td>'+escapeHtml(d.created_at||"")+'</td><td><button class="btn view-doc-btn" data-document-name="'+escapeHtml(d.document_name)+'">查看源文件</button> <button class="btn danger delete-doc-btn" data-document-name="'+escapeHtml(d.document_name)+'">删除</button></td></tr>';
+  });
+  box.innerHTML=h+"</tbody></table>";
+
+  box.querySelectorAll(".view-doc-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>viewDocument(btn.dataset.documentName));
+  });
+  box.querySelectorAll(".delete-doc-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>deleteDocument(btn.dataset.documentName));
+  });
+}
+
+// 在文档名中高亮命中的关键词（返回已经转义后的 HTML）
+function highlightName(name){
+  const safe = escapeHtml(name || "");
+  const kw = kbSearchKeyword.trim();
+  if(!kw) return safe;
+
+  const safeKw = escapeHtml(kw);
+  // 大小写不敏感替换，同时保留原始大小写
+  const regex = new RegExp(
+    escapeRegExp(safeKw),
+    "gi"
+  );
+  return safe.replace(
+    regex,
+    m => '<mark style="background:#fef3c7;padding:0 2px;border-radius:3px;">'+m+'</mark>'
+  );
+}
+function escapeRegExp(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+
+function escapeHtml(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+// 搜索框事件
+$("kbSearch").addEventListener("input", e=>{
+  kbSearchKeyword = e.target.value || "";
+  $("kbSearchClear").classList.toggle(
+    "show",
+    kbSearchKeyword.length > 0
+  );
+  renderDocuments();
+});
+$("kbSearchClear").addEventListener("click", ()=>{
+  $("kbSearch").value = "";
+  kbSearchKeyword = "";
+  $("kbSearchClear").classList.remove("show");
+  renderDocuments();
+  $("kbSearch").focus();
+});
+
+// ============================================================
+// 知识库：查看源文件（Markdown 渲染 / 源码切换）
+// ============================================================
+
+let currentDocContent = "";
+let currentDocIsMarkdown = false;
+let currentDocMode = "rendered"; // "rendered" | "source"
+
+function applyDocMode(){
+  const renderedBox = $("documentRendered");
+  const sourceBox = $("documentSourceContent");
+
+  if(currentDocMode === "rendered" && currentDocIsMarkdown){
+    renderedBox.style.display = "";
+    sourceBox.style.display = "none";
+    renderedBox.innerHTML = renderMarkdown(currentDocContent);
+  }else{
+    renderedBox.style.display = "none";
+    sourceBox.style.display = "";
+    sourceBox.textContent = currentDocContent;
+  }
+
+  document.querySelectorAll("#docModeToggle button").forEach(b=>{
+    b.classList.toggle("active", b.dataset.mode === currentDocMode);
+  });
+}
+
+document.querySelectorAll("#docModeToggle button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    currentDocMode = btn.dataset.mode;
+    applyDocMode();
+  });
+});
+
+async function viewDocument(name){
+  const modal = $("documentModal");
+  const title = $("documentModalTitle");
+  const sub = $("documentModalSub");
+  const source = $("documentSourceContent");
+  const rendered = $("documentRendered");
+  const tip = $("documentModalTip");
+
+  title.textContent = name;
+  sub.textContent = "正在读取源文件...";
+  source.textContent = "加载中...";
+  rendered.innerHTML = "";
+  tip.textContent = "—";
+
+  modal.classList.add("show");
+
+  try{
+    const r = await fetch("/documents/content/" + encodeURIComponent(name));
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok) throw Error(data.detail || "读取文档失败");
+
+    currentDocContent = data.content || "";
+    currentDocIsMarkdown = !!data.is_markdown;
+
+    // Markdown 默认渲染；TXT 默认源码
+    currentDocMode = currentDocIsMarkdown ? "rendered" : "source";
+
+    // 非 Markdown 隐藏渲染按钮，避免误点
+    document.querySelectorAll("#docModeToggle button").forEach(b=>{
+      if(b.dataset.mode === "rendered"){
+        b.style.display = currentDocIsMarkdown ? "" : "none";
+      }
+    });
+
+    title.textContent = data.document_name || name;
+    sub.textContent =
+      (currentDocIsMarkdown ? "Markdown 文档" : "文本文件") +
+      " · Chunks：" + (data.chunk_count || 0);
+
+    tip.textContent = "源文件来自 data/documents/，未经 chunk 拼接";
+
+    applyDocMode();
+
+  }catch(e){
+    sub.textContent = "读取失败";
+    source.textContent = e.message || "读取文档失败，请检查 API 服务。";
+    source.style.display = "";
+    rendered.style.display = "none";
+  }
+}
+
+// ============================================================
+// 知识库：删除文档
+// ============================================================
+
+async function deleteDocument(name){
+  if(!confirm("确定删除文档“"+name+"”吗？\n\n将同时删除：\n- 磁盘源文件\n- 该文档的全部 chunk（向量数据）\n\n删除后无法恢复。")){
+    return;
+  }
+
+  const buttons=document.querySelectorAll(".delete-doc-btn");
+  buttons.forEach(btn=>{
+    if(btn.dataset.documentName===name){
+      btn.disabled=true;
+      btn.textContent="删除中...";
+    }
+  });
+
+  try{
+    const r=await fetch("/documents/"+encodeURIComponent(name),{method:"DELETE"});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw Error(data.detail||"删除失败");
+
+    $("uploadStatus").innerHTML='<span class="success">已删除：'+escapeHtml(name)+'（含源文件与 '+ (data.deleted_chunks||0) +' 个 chunk）</span>';
+    await loadDocuments();
+  }catch(e){
+    alert(e.message||"删除失败，请检查 API 服务。");
+    await loadDocuments();
+  }
+}
+
+// ============================================================
+// 弹窗关闭
+// ============================================================
+
+function closeDocumentModal(){
+  $("documentModal").classList.remove("show");
+}
+$("documentModalClose").onclick = closeDocumentModal;
+$("documentModalCloseBottom").onclick = closeDocumentModal;
+$("documentModal").addEventListener("click",e=>{
+  if(e.target === $("documentModal")) closeDocumentModal();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key === "Escape" && $("documentModal").classList.contains("show")){
+    closeDocumentModal();
+  }
+});
+
+// ============================================================
+// 知识库：上传（分阶段进度条 + 同名覆盖确认）
+// ============================================================
+
+const uploadProgress = {
+  wrap: null,
+  bar: null,
+  label: null,
+  pct: null,
+  timer: null,
+
+  init(){
+    this.wrap = $("uploadProgress");
+    this.bar = $("uploadProgressBar");
+    this.label = $("uploadProgressLabel");
+    this.pct = $("uploadProgressPct");
+  },
+
+  show(){
+    this.wrap.classList.add("show");
+    this.bar.classList.remove("done","error");
+    this.set(0, "准备中...");
+  },
+
+  set(percent, text){
+    const p = Math.max(0, Math.min(100, Math.round(percent)));
+    this.bar.style.width = p + "%";
+    this.pct.textContent = p + "%";
+    if(text !== undefined) this.label.textContent = text;
+  },
+
+  done(text){
+    this.bar.classList.add("done");
+    this.set(100, text || "完成");
+    this.stopAuto();
+  },
+
+  error(text){
+    this.bar.classList.add("error");
+    this.label.textContent = text || "失败";
+    this.stopAuto();
+  },
+
+  hideLater(ms){
+    setTimeout(()=>{
+      this.wrap.classList.remove("show");
+      this.bar.classList.remove("done","error");
+      this.bar.style.width = "0%";
+      this.pct.textContent = "0%";
+    }, ms || 1600);
+  },
+
+  // 分阶段：检查同名 → 上传 → 生成 Embedding → 写入 DB → 完成
+  startAuto(){
+    this.stopAuto();
+    const phases = [
+      { to: 8,  text: "检查是否已存在同名文档..." },
+      { to: 18, text: "上传文件到服务器..." },
+      { to: 55, text: "生成 Embedding（这一步最耗时）..." },
+      { to: 80, text: "写入 chunk 与向量数据..." },
+      { to: 92, text: "更新文档映射..." },
+      { to: 97, text: "即将完成..." },
+    ];
+    let phase = 0;
+    let current = 0;
+
+    const tick = () => {
+      if(phase >= phases.length) return;
+      const target = phases[phase].to;
+      this.label.textContent = phases[phase].text;
+
+      current += Math.max(1, (target - current) * 0.35);
+      if(current >= target - 0.5){
+        current = target;
+        phase += 1;
+      }
+      this.bar.style.width = Math.round(current) + "%";
+      this.pct.textContent = Math.round(current) + "%";
+    };
+
+    this.timer = setInterval(tick, 180);
+  },
+
+  stopAuto(){
+    if(this.timer){
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+};
+uploadProgress.init();
+
+async function uploadKnowledgeFile(){
+  const file = $("knowledgeFile").files[0];
+
+  if(!file){
+    $("uploadStatus").innerHTML='<span class="error">请选择文件。</span>';
+    return;
+  }
+
+  $("uploadStatus").textContent = "";
+  uploadProgress.show();
+  uploadProgress.startAuto();
+
+  let overwrite = false;
+
+  try{
+    // 预检：是否已存在
+    uploadProgress.set(5, "检查是否已存在同名文档...");
+    const checkRes = await fetch(
+      "/documents/exists/" + encodeURIComponent(file.name)
+    );
+    const checkData = await checkRes.json().catch(()=>({}));
+
+    if(checkRes.ok && checkData.exists){
+      uploadProgress.stopAuto();
+      uploadProgress.set(5, "检测到同名文档，等待用户确认...");
+
+      const ok = confirm(
+        "知识库中已存在同名文档：\n\n" +
+        file.name + "\n\n" +
+        "是否覆盖？\n\n" +
+        "覆盖将执行：\n" +
+        "1. 删除旧的源文件\n" +
+        "2. 删除旧的全部 chunk（向量数据）\n" +
+        "3. 重新切分新文件并生成新的 embedding"
+      );
+
+      if(!ok){
+        uploadProgress.error("已取消上传（保留原文档）");
+        $("uploadStatus").innerHTML = '<span class="sub">已取消上传（保留原文档）。</span>';
+        uploadProgress.hideLater(1500);
+        return;
+      }
+
+      overwrite = true;
+      uploadProgress.startAuto();
+      uploadProgress.set(12, "用户确认覆盖，开始上传...");
+    }
+  }catch(e){
+    console.warn("exists 预检失败，直接上传", e);
+  }
+
+  // 上传
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("overwrite", overwrite ? "true" : "false");
+
+  $("uploadBtn").disabled = true;
+
+  try{
+    const r = await fetch("/documents/upload",{method:"POST",body:fd});
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok) throw Error(data.detail || "上传失败");
+
+    uploadProgress.done("完成");
+    uploadProgress.set(100, "完成");
+
+    const chunkCount = data.chunk_count ?? data.chunks ?? 0;
+    const tip = data.overwritten ? "已覆盖" : "上传成功";
+    let html = '<span class="success">'+tip+'：'+chunkCount+' 个 chunks</span>';
+    if(data.warning){
+      html += ' <span class="warn">'+escapeHtml(data.warning)+'</span>';
+    }
+    $("uploadStatus").innerHTML = html;
+
+    $("knowledgeFile").value = "";
+    await loadDocuments();
+
+  }catch(e){
+    uploadProgress.error(e.message || "上传失败");
+    $("uploadStatus").innerHTML='<span class="error">'+escapeHtml(e.message||"上传失败")+"</span>";
+  }finally{
+    $("uploadBtn").disabled = false;
+    uploadProgress.hideLater(1800);
+  }
+}
+$("uploadBtn").onclick=uploadKnowledgeFile;
+
+// ============================================================
+// 系统健康
+// ============================================================
+
+async function loadHealth(){
+  $("healthJson").textContent="加载中...";$("healthCards").innerHTML="";
+  try{
+    const r=await fetch("/health");const data=await r.json();$("healthJson").textContent=JSON.stringify(data,null,2);
+    const checks=data.checks||{}; let h="";
+    Object.entries(checks).forEach(([name,v])=>{const ok=v.status==="ok";h+='<div class="metric"><div class="label">'+escapeHtml(name.toUpperCase())+'</div><div class="value">'+(ok?"✓":"✕")+'</div><span class="badge '+(ok?"ok":"bad")+'">'+(ok?"正常":"异常")+"</span></div>"});
+    $("healthCards").innerHTML=h;
+    $("globalStatus").textContent=data.status==="ok"?"系统正常":"系统异常";$("globalStatus").className="status-pill "+(data.status==="ok"?"ok":"bad");
+  }catch(e){$("healthJson").textContent="健康检查请求失败";$("globalStatus").textContent="检查失败";$("globalStatus").className="status-pill bad"}
+}
+$("refreshHealth").onclick=loadHealth;
+
+// ============================================================
+// RAG 调试
+// ============================================================
+
+async function runRagDebug(){
+  const q=$("ragQuestion").value.trim();if(!q)return;
+  $("ragSummary").innerHTML='<div class="loading">检索中...</div>';$("ragResults").innerHTML="";
+  try{
+    const r=await fetch("/rag/debug?question="+encodeURIComponent(q));const d=await r.json();if(!r.ok)throw Error();
+    $("ragSummary").innerHTML='<div class="grid"><div class="metric"><div class="label">Embedding</div><div class="value">'+d.embedding_dimension+'</div><div class="sub">维度</div></div><div class="metric"><div class="label">Max Similarity</div><div class="value">'+Number(d.max_similarity||0).toFixed(4)+'</div></div><div class="metric"><div class="label">Gate</div><div class="value">'+(d.gate_pass?"通过":"拒绝")+'</div><span class="badge '+(d.gate_pass?"ok":"bad")+'">Threshold '+d.threshold+'</span></div></div>';
+    if(!d.results.length){$("ragResults").innerHTML='<div class="card"><span class="sub">没有超过 Similarity Threshold 的知识片段。</span></div>';return}
+    d.results.forEach(x=>{const div=document.createElement("div");div.className="result-item";div.innerHTML='<div><span class="badge blue">chunk '+x.chunk_index+'</span> <span class="score">Similarity '+Number(x.similarity).toFixed(4)+'</span></div><div class="sub" style="margin-top:7px">'+escapeHtml(x.document_name)+'</div><div style="margin-top:9px;white-space:pre-wrap">'+escapeHtml(x.content)+'</div>';$("ragResults").appendChild(div)})
+  }catch(e){$("ragSummary").innerHTML='<div class="error">RAG 调试请求失败。</div>'}
+}
+$("ragDebugBtn").onclick=runRagDebug;
+
+// ============================================================
+// 初始化
+// ============================================================
+
+async function initialize(){await Promise.all([loadSessions(),loadHistory()]);loadHealth();$("prompt").focus()}
+initialize();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY api.py .
+COPY static ./static
+
+# 创建 SQLite 数据目录
+RUN mkdir -p /app/data
+
+EXPOSE 8000
+
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# AI Demo V2 版本标识
+RUN echo "V2" > /app/VERSION
