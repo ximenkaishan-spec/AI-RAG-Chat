@@ -1,4 +1,4 @@
-# AI 私有化知识库问答系统
+# AI 私有化知识库问答系统（ AI RAG Chat）
 
 基于 FastAPI + Docker + Ollama + Embedding + RAG + 通义千问构建的 AI 知识库问答 Demo。
 
