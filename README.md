@@ -1,6 +1,6 @@
 # AI 私有化知识库问答系统（ AI RAG Chat）
 
-基于 FastAPI + Docker + Ollama + Embedding + RAG + 通义千问构建的 AI 知识库问答 Demo。
+基于 FastAPI + Docker + Ollama + Embedding + RAG + 大模型构建的 AI 知识库问答 Demo。
 
 项目重点模拟企业内部 AI 私有化部署、知识库问答、系统集成与运维场景。
 
