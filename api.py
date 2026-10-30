@@ -50,7 +50,7 @@ DASHSCOPE_BASE_URL = os.getenv(
 
 MODEL_NAME = os.getenv(
     "DASHSCOPE_MODEL",
-    "qwen-plus-2025-07-28"
+    "qwen-plus"
 )
 
 
@@ -1278,7 +1278,7 @@ async def health():
         checks["embedding"] = {"status": "error", "message": str(e)}
 
     if not DASHSCOPE_API_KEY:
-        checks["qwen"] = {
+        checks["llm"] = {
             "status": "error",
             "message": "DASHSCOPE_API_KEY 未配置"
         }
@@ -1301,13 +1301,13 @@ async def health():
                     }
                 )
                 response.raise_for_status()
-            checks["qwen"] = {
+            checks["llm"] = {
                 "status": "ok",
-                "message": "Qwen / 百炼正常",
+                "message": "freellmapi 正常",
                 "model": MODEL_NAME
             }
         except Exception as e:
-            checks["qwen"] = {"status": "error", "message": str(e)}
+            checks["llm"] = {"status": "error", "message": str(e)}
 
     overall_ok = all(
         item.get("status") == "ok"

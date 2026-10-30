@@ -302,6 +302,12 @@ button,input,textarea{font:inherit}.app{display:flex;height:100vh}.sidebar{width
   .document-modal-actions{width:100%;justify-content:flex-end;}
 }
 @media(max-width:800px){.sidebar{width:64px;padding:12px 7px}.brand{font-size:0;text-align:center}.brand:first-letter{font-size:20px}.brand small,.nav button span,.sidebar-foot{display:none}.nav button{text-align:center}.sessions{display:none}.chat{padding:16px}.composer{padding:10px}.grid{grid-template-columns:1fr}.bubble{max-width:92%}.topbar{padding:0 14px}.content{padding:14px}}
+#globalToggleBtn:hover{background:#334155;}
+
+.topbar-title-group{display:flex;align-items:center;gap:12px;}
+#toggleBtn{background:none;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;font-size:16px;padding:4px 8px;color:#4b5563;}
+#toggleBtn:hover{background:#f3f4f6;}
+.collapsed{display:none !important;}
 </style>
 </head>
 <body>
@@ -318,7 +324,7 @@ button,input,textarea{font:inherit}.app{display:flex;height:100vh}.sidebar{width
 </aside>
 
 <main class="main">
-<header class="topbar"><div class="page-title" id="pageTitle">AI 对话</div><div id="globalStatus" class="status-pill">检查中...</div></header>
+<header class="topbar"><div class="topbar-title-group"><button id="toggleBtn" title="隐藏/显示左侧菜单">☰</button><div class="page-title" id="pageTitle">AI 对话</div></div><div id="globalStatus" class="status-pill">检查中...</div></header>
 
 <section class="page active chat-page" id="page-chat">
   <div class="chat-layout">
@@ -380,7 +386,7 @@ button,input,textarea{font:inherit}.app{display:flex;height:100vh}.sidebar{width
 
 <section class="page" id="page-health">
 <div class="content">
-  <div class="card"><h3>系统健康检查</h3><div class="sub">检查 SQLite、Ollama、Embedding 和 Qwen 服务链路。</div><div style="margin-top:12px"><button class="btn" id="refreshHealth">重新检查</button></div></div>
+  <div class="card"><h3>系统健康检查</h3><div class="sub">检查 SQLite、Ollama、Embedding 和 大模型服务链路。</div><div style="margin-top:12px"><button class="btn" id="refreshHealth">重新检查</button></div></div>
   <div class="grid" id="healthCards"></div>
   <div class="card"><h3>原始检查结果</h3><div class="json" id="healthJson">加载中...</div></div>
 </div>
@@ -434,6 +440,7 @@ button,input,textarea{font:inherit}.app{display:flex;height:100vh}.sidebar{width
 
 <script>
 const $=id=>document.getElementById(id);
+document.addEventListener("DOMContentLoaded",()=>{const btn=document.getElementById("toggleBtn");const sidebar=document.querySelector(".sidebar");const sessions=document.querySelector(".sessions");if(btn){btn.addEventListener("click",()=>{sidebar.classList.toggle("collapsed");if(sessions)sessions.classList.toggle("collapsed");});}});
 let currentController=null;
 let sessionId=localStorage.getItem("ai_demo_session_id")||newSessionId();
 
